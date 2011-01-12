@@ -39,7 +39,7 @@ class ircCatBot(irc.IRCClient):
                         time.asctime(time.localtime(time.time())))
 
     def send(self, line):
-        self.logger.info("Sending: %s" % line)
+        self.logger.debug("Sending: %s" % line)
         self.msg("#log", line)
 
     # callbacks for events
