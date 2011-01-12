@@ -25,7 +25,7 @@ setup(name='irccat',
     scripts=glob('scripts/*'),
     entry_points = {
         'console_scripts': [
-        'irccat =    irccat:botmain',
+            'irccat =    irccat.bot:main',
         ]
     },
     )
