@@ -124,7 +124,7 @@ def runbot(config):
 
     line_to_bot = LineToBotFactory(f)
 
-    reactor.listenTCP(5001, line_to_bot)
+    reactor.listenTCP(config['cat']['port'], line_to_bot, interface=config['cat']['ip'])
 
     # run bot
     reactor.run()
