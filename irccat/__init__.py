@@ -42,7 +42,15 @@ class ircCatBot(irc.IRCClient):
 
     def parse_and_send(self, line):
         self.logger.debug("Sending: %s" % line)
-        self.msg("#log", line)
+        targets, line = util.extract_targets(line)
+        if not targets:
+            targets = self.factory.default_channels
+        for c in targets:
+            if c == '#*':
+                for c in self.factory.all_channels:
+                    self.msg(c, line)
+            else:
+                self.msg(c, line)
 
     # callbacks for events
 
@@ -92,6 +100,9 @@ class ircCatBotFactory(protocol.ClientFactory):
         self.nickname = nickname
         self.channels = channels
         self.password = password
+
+        self.all_channels = [c['name'] for c in channels]
+        self.default_channels = [c['name'] for c in channels if c.get('default')]
 
     def clientConnectionLost(self, connector, reason):
         """If we get disconnected, reconnect to server."""
