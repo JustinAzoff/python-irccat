@@ -1,0 +1,3 @@
+A sort of python implementation of https://github.com/RJ/irccat
+
+It supports the same line protocol as the java version and uses a similar config file.
