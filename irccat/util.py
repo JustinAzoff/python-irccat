@@ -13,3 +13,23 @@ def extract_targets(line):
     special_targets = [t.lstrip("@") for t in special_targets]
 
     return special_targets, line
+
+def maybe_int(s):
+    if s.isdigit():
+        return int(s)
+    return s
+
+import ConfigParser
+def read_config(cfg_file):
+    c = ConfigParser.ConfigParser()
+    c.read([cfg_file])
+    config = {}
+    channels = []
+    for section in c.sections():
+        vars = dict(((k,maybe_int(v)) for (k,v) in c.items(section)))
+        if section.startswith("channel_"):
+            channels.append(vars)
+        else:
+            config[section] = vars
+    config['channels'] = channels
+    return config

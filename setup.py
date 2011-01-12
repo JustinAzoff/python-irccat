@@ -20,11 +20,12 @@ setup(name='irccat',
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        "twisted",
+        "Twisted_Core",
     ],
     scripts=glob('scripts/*'),
-    #entry_points = {
-    #    'console_scripts': [
-    #    ]
-    #},
+    entry_points = {
+        'console_scripts': [
+        'irccat =    irccat:botmain',
+        ]
+    },
     )
