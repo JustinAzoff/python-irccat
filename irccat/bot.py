@@ -23,6 +23,9 @@ class LineToBotFactory(protocol.ServerFactory):
 
 class ircCatBot(irc.IRCClient):
     """A logging IRC bot."""
+
+    def __init__(self):
+        self.in_channels = set()
     
     def connectionMade(self):
         self.nickname = self.factory.nickname
@@ -40,6 +43,12 @@ class ircCatBot(irc.IRCClient):
         self.logger.info("[disconnected at %s]" % 
                         time.asctime(time.localtime(time.time())))
 
+
+    def send_to(self, dest, line):
+        if dest.startswith("#") and dest not in self.in_channels:
+            self.join(dest)
+        self.msg(dest, line)
+
     def parse_and_send(self, line):
         self.logger.debug("Sending: %s" % line)
         targets, line = util.extract_targets(line)
@@ -48,9 +57,9 @@ class ircCatBot(irc.IRCClient):
         for c in targets:
             if c == '#*':
                 for c in self.factory.all_channels:
-                    self.msg(c, line)
+                    self.send_to(c, line)
             else:
-                self.msg(c, line)
+                self.send_to(c, line)
 
     # callbacks for events
 
@@ -62,6 +71,18 @@ class ircCatBot(irc.IRCClient):
     def joined(self, channel):
         """This will get called when the bot joins the channel."""
         self.logger.info("[I have joined %s]" % channel)
+        self.in_channels.add(channel)
+
+    def left(self, channel):
+        """Called when I have left a channel."""
+        self.logger.info("[I have left %s]" % channel)
+        self.in_channels.difference_update([channel])
+
+    def kickedFrom(self, channel, kicker, message):
+        """Called when I am kicked from a channel."""
+        self.logger.info("[I was kicked from %s by %s (%s)]" % (channel, kicker, message))
+        self.in_channels.difference_update([channel])
+
 
     def privmsg(self, user, channel, msg):
         """This will get called when the bot receives a message."""
