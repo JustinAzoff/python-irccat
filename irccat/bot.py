@@ -127,7 +127,7 @@ class ircCatBotFactory(protocol.ClientFactory):
 
     def clientConnectionLost(self, connector, reason):
         """If we get disconnected, reconnect to server."""
-        connector.connect()
+        reactor.callLater(10, connector.connect)
 
     def clientConnectionFailed(self, connector, reason):
         print "connection failed:", reason
